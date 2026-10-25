@@ -1,0 +1,335 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>유튜브 구간 링크</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: single narrow column — form card, timeline strip, then a stack of copyable result rows */
+:root {
+  --bg: #F3F5F8;
+  --surface: #FFFFFF;
+  --fg: #1A2130;
+  --muted: #5D6677;
+  --line: #D9DEE6;
+  --accent: #155E75;
+  --accent-soft: #DCEEF3;
+  --seg: #C2410C;
+  --ok: #15803D;
+  --display: "Gowun Batang", "Nanum Myeongjo", serif;
+  --body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11151C; --surface: #1A2029; --fg: #E6EAF0; --muted: #9AA3B2; --line: #2D3542;
+    --accent: #5EC2D9; --accent-soft: #173640; --seg: #FB923C; --ok: #4ADE80; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11151C; --surface: #1A2029; --fg: #E6EAF0; --muted: #9AA3B2; --line: #2D3542;
+  --accent: #5EC2D9; --accent-soft: #173640; --seg: #FB923C; --ok: #4ADE80; color-scheme: dark;
+}
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 48px;
+}
+.wrap { max-width: 640px; margin: 0 auto; display: grid; gap: 28px; }
+header h1 { font-family: var(--display); font-size: 1.9rem; line-height: 1.25; margin: 0 0 6px; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: grid; gap: 16px; }
+label { display: grid; gap: 6px; font-weight: 500; font-size: .95rem; }
+.hint { font-weight: 400; color: var(--muted); font-size: .85rem; }
+input {
+  font: inherit; font-size: 1rem; color: var(--fg); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; width: 100%; box-sizing: border-box;
+}
+input:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+input.time { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+input[aria-invalid="true"] { border-color: var(--seg); }
+.row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 480px) { .row3 { grid-template-columns: 1fr 1fr; } .row3 label:last-child { grid-column: 1 / -1; } }
+.msg { margin: 0; font-size: .9rem; color: var(--seg); }
+.msg:empty { display: none; }
+
+/* timeline */
+.timeline { display: grid; gap: 8px; }
+.bar { position: relative; height: 14px; background: var(--line); border-radius: 7px; overflow: hidden; }
+.seg { position: absolute; top: 0; bottom: 0; background: var(--seg); border-radius: 7px; min-width: 4px; }
+.ticks { display: flex; justify-content: space-between; font-family: var(--mono); font-size: .78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.summary { font-size: .95rem; }
+.summary strong { font-family: var(--mono); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+/* results */
+.results { display: grid; gap: 14px; }
+.results h2 { font-size: 1.05rem; margin: 0; }
+.item { display: grid; gap: 8px; padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.item.main { border-color: var(--accent); background: var(--accent-soft); }
+.item h3 { margin: 0; font-size: .98rem; }
+.item p { margin: 0; color: var(--muted); font-size: .88rem; }
+.out {
+  font-family: var(--mono); font-size: .85rem; background: var(--bg); border: 1px solid var(--line);
+  border-radius: 6px; padding: 8px 10px; overflow-x: auto; white-space: pre; min-width: 0;
+  -webkit-user-select: all; user-select: all;
+}
+.out.wrapit { white-space: pre-wrap; word-break: break-all; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn {
+  font: inherit; font-size: .9rem; font-weight: 600; cursor: pointer; text-decoration: none;
+  border-radius: 6px; padding: 8px 14px; border: 1px solid var(--accent); color: var(--accent); background: transparent;
+}
+.btn.primary { background: var(--accent); color: var(--surface); }
+.btn[aria-disabled="true"] { opacity: .45; pointer-events: none; }
+.btn.done { border-color: var(--ok); color: var(--ok); }
+.empty { color: var(--muted); font-size: .92rem; padding: 14px 16px; border: 1px dashed var(--line); border-radius: 10px; margin: 0; }
+footer { color: var(--muted); font-size: .85rem; display: grid; gap: 6px; }
+footer p { margin: 0; }
+@media (prefers-reduced-motion: no-preference) { .seg { transition: left .25s, width .25s; } }
+
+/* player mode (?v=...&s=...&e=...) */
+.frame { aspect-ratio: 16 / 9; background: #000; border-radius: 10px; overflow: hidden; }
+.frame iframe, .frame #yt { width: 100%; height: 100%; border: 0; display: block; }
+</style>
+
+<div class="wrap" id="player" hidden>
+  <header>
+    <h1 id="pTitle"></h1>
+    <p id="pRange"></p>
+  </header>
+  <div class="frame"><div id="yt"></div></div>
+  <p class="msg" id="pMsg" role="alert"></p>
+  <div class="actions">
+    <button type="button" class="btn primary" id="pReplay">구간 처음부터 다시</button>
+    <a class="btn" id="pJump" target="_blank" rel="noopener">유튜브에서 보기</a>
+  </div>
+</div>
+
+<div class="wrap" id="tool">
+  <header>
+    <h1>유튜브 구간 링크</h1>
+    <p>긴 영상에서 원하는 부분만 재생되는 링크를 만듭니다. 원본 영상을 그대로 쓰기 때문에 따로 업로드할 필요가 없어요.</p>
+  </header>
+
+  <form class="card" id="f" novalidate>
+    <label for="url">유튜브 영상 주소
+      <input id="url" type="url" inputmode="url" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off">
+      <span class="hint">유튜브 앱의 공유 버튼으로 복사한 주소도 됩니다.</span>
+    </label>
+    <div class="row3">
+      <label for="start">시작
+        <input id="start" class="time" value="40:50" inputmode="decimal">
+      </label>
+      <label for="end">끝
+        <input id="end" class="time" value="53:25" inputmode="decimal">
+      </label>
+      <label for="total">전체 길이 <span class="hint">(선택)</span>
+        <input id="total" class="time" value="3:00:00" inputmode="decimal">
+      </label>
+    </div>
+    <label for="title">공유할 때 붙일 제목 <span class="hint">(선택)</span>
+      <input id="title" value="극동방송 70주년 홈커밍데이 기념 음악회 – 이종용 목사님">
+    </label>
+    <p class="msg" id="msg" role="alert"></p>
+  </form>
+
+  <section class="timeline" aria-label="전체 영상 중 선택한 구간">
+    <div class="summary" id="summary"></div>
+    <div class="bar"><div class="seg" id="seg"></div></div>
+    <div class="ticks" id="ticks"></div>
+  </section>
+
+  <section class="results" id="results" aria-live="polite"></section>
+
+  <footer>
+    <p>시간은 40:50, 1:02:03처럼 쓰거나 53.25처럼 점으로 써도 됩니다.</p>
+    <p>구간 재생 링크는 이 페이지를 인터넷 주소(예: GitHub Pages)에 올려서 열었을 때만 만들어집니다.</p>
+    <p>구간 재생 링크가 "동영상을 재생할 수 없음"으로 나오면 영상 주인이 외부 재생을 막아 둔 경우예요. 그럴 땐 시작 지점 링크를 쓰세요.</p>
+  </footer>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const fields = ["url", "start", "end", "total", "title"];
+const qs = new URLSearchParams(location.search);
+// A clip link only plays when this page is served from a real web address; YouTube rejects
+// embeds with no referrer (error 153), which is what file:// pages and bare /embed/ URLs send.
+const hosted = /^https?:$/.test(location.protocol);
+
+function parseTime(s) {
+  s = (s || "").trim().replace(/\./g, ":").replace(/\s+/g, "");
+  if (!s) return null;
+  if (/^\d+$/.test(s)) return Number(s);
+  const hms = s.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/i);
+  if (hms && (hms[1] || hms[2] || hms[3])) return (+hms[1] || 0) * 3600 + (+hms[2] || 0) * 60 + (+hms[3] || 0);
+  const parts = s.split(":");
+  if (parts.length < 2 || parts.length > 3 || parts.some((p) => !/^\d+$/.test(p))) return null;
+  const n = parts.map(Number);
+  if (n.slice(1).some((x) => x >= 60)) return null;
+  return n.length === 3 ? n[0] * 3600 + n[1] * 60 + n[2] : n[0] * 60 + n[1];
+}
+function fmt(sec) {
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+  const pad = (x) => String(x).padStart(2, "0");
+  return h ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`;
+}
+function fmtLen(sec) {
+  const m = Math.floor(sec / 60), s = sec % 60;
+  return m ? `${m}분${s ? " " + s + "초" : ""}` : `${s}초`;
+}
+function videoId(u) {
+  u = (u || "").trim();
+  if (/^[\w-]{11}$/.test(u)) return u;
+  const m = u.match(/(?:youtu\.be\/|[?&]v=|\/(?:embed|shorts|live|v)\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+
+function copyBtn(text, label) {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "btn"; b.textContent = label;
+  b.addEventListener("click", (ev) => {
+    const done = () => { b.textContent = "복사됨"; b.classList.add("done"); setTimeout(() => { b.textContent = label; b.classList.remove("done"); }, 1600); };
+    const fallback = () => {
+      const pre = b.closest(".item").querySelector(".out");
+      const r = document.createRange(); r.selectNodeContents(pre);
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      b.textContent = "선택됨 — 길게 눌러 복사";
+    };
+    try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+  });
+  return b;
+}
+function item({ title, desc, text, main, open, copyLabel, wrap }) {
+  const d = document.createElement("div");
+  d.className = "item" + (main ? " main" : "");
+  d.innerHTML = `<h3></h3><p></p><div class="out${wrap ? " wrapit" : ""}"></div><div class="actions"></div>`;
+  d.querySelector("h3").textContent = title;
+  d.querySelector("p").textContent = desc;
+  const acts = d.querySelector(".actions");
+  if (!text) { d.querySelector(".out").remove(); acts.remove(); return d; }
+  d.querySelector(".out").textContent = text;
+  if (open) {
+    const a = document.createElement("a");
+    a.className = "btn primary"; a.href = open; a.target = "_blank"; a.rel = "noopener"; a.textContent = "열어서 재생";
+    acts.append(a);
+  }
+  acts.append(copyBtn(text, copyLabel || "복사"));
+  return d;
+}
+
+function render() {
+  const vals = Object.fromEntries(fields.map((k) => [k, $(k).value]));
+  try { localStorage.setItem("clip-link-v1", JSON.stringify(vals)); } catch (e) {}
+
+  const id = videoId(vals.url);
+  const st = parseTime(vals.start), en = parseTime(vals.end);
+  let total = parseTime(vals.total);
+  const errs = [];
+  $("start").setAttribute("aria-invalid", st === null);
+  $("end").setAttribute("aria-invalid", en === null);
+  if (st === null) errs.push("시작 시간을 40:50 같은 형식으로 적어 주세요.");
+  if (en === null) errs.push("끝 시간을 53:25 같은 형식으로 적어 주세요.");
+  if (st !== null && en !== null && en <= st) errs.push("끝 시간이 시작 시간보다 뒤여야 합니다.");
+  if (vals.url.trim() && !id) errs.push("유튜브 영상 주소를 알아볼 수 없어요. 주소 전체를 다시 붙여 넣어 주세요.");
+  $("url").setAttribute("aria-invalid", !!(vals.url.trim() && !id));
+  $("msg").textContent = errs.join(" ");
+  const timesOk = st !== null && en !== null && en > st;
+
+  // timeline
+  if (timesOk) {
+    if (!total || total < en) total = Math.max(en, total || 0);
+    $("seg").style.left = (st / total * 100) + "%";
+    $("seg").style.width = ((en - st) / total * 100) + "%";
+    $("summary").innerHTML = `<strong>${fmt(st)}</strong> 부터 <strong>${fmt(en)}</strong> 까지, ${fmtLen(en - st)}`;
+    $("ticks").innerHTML = `<span>0:00</span><span>${fmt(Math.round(total / 2))}</span><span>${fmt(total)}</span>`;
+  } else {
+    $("seg").style.width = "0"; $("summary").textContent = "시작과 끝 시간을 확인해 주세요."; $("ticks").innerHTML = "";
+  }
+
+  const res = $("results");
+  res.innerHTML = "<h2>만들어진 링크</h2>";
+  if (!timesOk || !id) {
+    const p = document.createElement("p");
+    p.className = "empty";
+    p.textContent = !id ? "위에 유튜브 영상 주소를 붙여 넣으면 링크가 여기에 나타납니다." : "시간을 고치면 링크가 다시 나타납니다.";
+    res.append(p);
+    return;
+  }
+
+  const jump = `https://youtu.be/${id}?t=${st}`;
+  const title = vals.title.trim();
+  const clip = hosted
+    ? `${location.origin}${location.pathname}?v=${id}&s=${st}&e=${en}${title ? "&title=" + encodeURIComponent(title) : ""}`
+    : null;
+  const share = `${title ? title + "\n" : ""}(${fmt(st)} ~ ${fmt(en)}, ${fmtLen(en - st)})\n${clip || jump}`;
+  const embed = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${id}?start=${st}&end=${en}&rel=0" title="${title.replace(/"/g, "&quot;") || "YouTube video"}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+
+  res.append(
+    item(clip
+      ? { main: true, title: "구간 재생 링크", desc: `${fmt(st)}에서 시작해 ${fmt(en)}에서 자동으로 멈춥니다. 이 부분만 보실 때 쓰세요.`, text: clip, open: clip, copyLabel: "링크 복사" }
+      : { main: true, title: "구간 재생 링크", desc: "지금은 이 페이지가 내 컴퓨터의 파일로 열려 있어서 구간 재생 링크를 만들 수 없어요. 이 페이지를 인터넷 주소(예: GitHub Pages)에 올린 뒤 그 주소에서 열면 여기에 링크가 나타납니다. 그 전까지는 아래 시작 지점 링크를 쓰세요." }),
+    item({ title: "시작 지점 링크", desc: "유튜브 앱에서 그 지점부터 열립니다. 끝에서 멈추지는 않지만 어떤 영상에서도 됩니다.", text: jump, open: jump, copyLabel: "링크 복사" }),
+    item({ title: "카카오톡·문자로 보낼 내용", desc: "제목, 구간, 링크를 한 번에 붙여 넣을 수 있게 정리했습니다.", text: share, wrap: true, copyLabel: "내용 복사" }),
+    item({ title: "블로그·웹페이지에 넣을 코드", desc: "글에 넣으면 이 구간만 재생되는 플레이어가 들어갑니다.", text: embed, copyLabel: "코드 복사" })
+  );
+}
+
+function startPlayer(id) {
+  const st = parseTime(qs.get("s")) || 0;
+  const en = parseTime(qs.get("e"));
+  const end = en !== null && en > st ? en : null;
+  const title = (qs.get("title") || "").trim();
+  $("tool").hidden = true;
+  $("player").hidden = false;
+  document.title = title || "유튜브 구간 재생";
+  $("pTitle").textContent = title || "유튜브 구간 재생";
+  $("pRange").textContent = end ? `${fmt(st)} ~ ${fmt(end)} 구간, ${fmtLen(end - st)}` : `${fmt(st)}부터 재생`;
+  $("pJump").href = `https://youtu.be/${id}?t=${st}`;
+
+  const range = { videoId: id, startSeconds: st };
+  if (end) range.endSeconds = end;
+  const vars = { start: st, rel: 0, playsinline: 1, autoplay: 1 };
+  if (end) vars.end = end;
+  if (hosted) vars.origin = location.origin;
+
+  let yp = null;
+  window.onYouTubeIframeAPIReady = () => {
+    yp = new YT.Player("yt", {
+      videoId: id, playerVars: vars,
+      events: {
+        onError: (e) => {
+          $("pMsg").textContent =
+            e.data === 101 || e.data === 150 ? "영상 주인이 다른 사이트에서의 재생을 막아 두었어요. '유튜브에서 보기'를 눌러 주세요." :
+            e.data === 100 ? "영상을 찾을 수 없어요. 삭제되었거나 비공개로 바뀌었을 수 있어요." :
+            e.data === 153 ? "이 페이지를 인터넷 주소에서 열어야 재생됩니다. '유튜브에서 보기'를 눌러 주세요." :
+            `재생 중 문제가 생겼어요 (오류 ${e.data}). '유튜브에서 보기'를 눌러 주세요.`;
+        }
+      }
+    });
+  };
+  // Reloading with endSeconds keeps the stop point; a plain seekTo after the clip ends ignores it.
+  $("pReplay").addEventListener("click", () => { if (yp && yp.loadVideoById) yp.loadVideoById(range); });
+
+  const s = document.createElement("script");
+  s.src = "https://www.youtube.com/iframe_api";
+  s.onerror = () => { $("pMsg").textContent = "유튜브 플레이어를 불러오지 못했어요. 인터넷 연결을 확인해 주세요."; };
+  document.head.append(s);
+}
+
+const playId = videoId(qs.get("v") || "");
+if (playId) {
+  startPlayer(playId);
+} else {
+  try {
+    const saved = JSON.parse(localStorage.getItem("clip-link-v1") || "null");
+    if (saved) fields.forEach((k) => { if (typeof saved[k] === "string") $(k).value = saved[k]; });
+  } catch (e) {}
+  fields.forEach((k) => $(k).addEventListener("input", render));
+  $("f").addEventListener("submit", (e) => e.preventDefault());
+  render();
+}
+</script>
+
+</body></html>
