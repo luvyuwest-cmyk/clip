@@ -120,17 +120,17 @@ footer p { margin: 0; }
     </label>
     <div class="row3">
       <label for="start">시작
-        <input id="start" class="time" value="40:50" inputmode="decimal">
+        <input id="start" class="time" placeholder="40:50" inputmode="decimal">
       </label>
       <label for="end">끝
-        <input id="end" class="time" value="53:25" inputmode="decimal">
+        <input id="end" class="time" placeholder="53:25" inputmode="decimal">
       </label>
       <label for="total">전체 길이 <span class="hint">(선택)</span>
-        <input id="total" class="time" value="3:00:00" inputmode="decimal">
+        <input id="total" class="time" placeholder="1:30:00" inputmode="decimal">
       </label>
     </div>
     <label for="title">공유할 때 붙일 제목 <span class="hint">(선택)</span>
-      <input id="title" value="극동방송 70주년 홈커밍데이 기념 음악회 – 이종용 목사님">
+      <input id="title" placeholder="예: 기념 음악회 – 특송">
     </label>
     <p class="msg" id="msg" role="alert"></p>
   </form>
@@ -227,10 +227,12 @@ function render() {
   const st = parseTime(vals.start), en = parseTime(vals.end);
   let total = parseTime(vals.total);
   const errs = [];
-  $("start").setAttribute("aria-invalid", st === null);
-  $("end").setAttribute("aria-invalid", en === null);
-  if (st === null) errs.push("시작 시간을 40:50 같은 형식으로 적어 주세요.");
-  if (en === null) errs.push("끝 시간을 53:25 같은 형식으로 적어 주세요.");
+  // Empty fields are just not filled in yet; only complain about text that can't be read.
+  const badSt = st === null && !!vals.start.trim(), badEn = en === null && !!vals.end.trim();
+  $("start").setAttribute("aria-invalid", badSt);
+  $("end").setAttribute("aria-invalid", badEn);
+  if (badSt) errs.push("시작 시간을 40:50 같은 형식으로 적어 주세요.");
+  if (badEn) errs.push("끝 시간을 53:25 같은 형식으로 적어 주세요.");
   if (st !== null && en !== null && en <= st) errs.push("끝 시간이 시작 시간보다 뒤여야 합니다.");
   if (vals.url.trim() && !id) errs.push("유튜브 영상 주소를 알아볼 수 없어요. 주소 전체를 다시 붙여 넣어 주세요.");
   $("url").setAttribute("aria-invalid", !!(vals.url.trim() && !id));
@@ -245,7 +247,7 @@ function render() {
     $("summary").innerHTML = `<strong>${fmt(st)}</strong> 부터 <strong>${fmt(en)}</strong> 까지, ${fmtLen(en - st)}`;
     $("ticks").innerHTML = `<span>0:00</span><span>${fmt(Math.round(total / 2))}</span><span>${fmt(total)}</span>`;
   } else {
-    $("seg").style.width = "0"; $("summary").textContent = "시작과 끝 시간을 확인해 주세요."; $("ticks").innerHTML = "";
+    $("seg").style.width = "0"; $("summary").textContent = "시작과 끝 시간을 적어 주세요."; $("ticks").innerHTML = "";
   }
 
   const res = $("results");
@@ -253,7 +255,7 @@ function render() {
   if (!timesOk || !id) {
     const p = document.createElement("p");
     p.className = "empty";
-    p.textContent = !id ? "위에 유튜브 영상 주소를 붙여 넣으면 링크가 여기에 나타납니다." : "시간을 고치면 링크가 다시 나타납니다.";
+    p.textContent = !id ? "위에 유튜브 영상 주소를 붙여 넣으면 링크가 여기에 나타납니다." : "시작과 끝 시간을 적으면 링크가 여기에 나타납니다.";
     res.append(p);
     return;
   }
